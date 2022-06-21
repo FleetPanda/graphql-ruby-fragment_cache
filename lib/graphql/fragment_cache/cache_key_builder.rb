@@ -134,6 +134,7 @@ module GraphQL
 
       def build
         [
+          implicit_pattern_key,
           GraphQL::FragmentCache.namespace,
           implicit_cache_key,
           object_cache_key
@@ -142,12 +143,20 @@ module GraphQL
 
       private
 
+      def implicit_pattern_key
+        Digest::SHA1.hexdigest("#{tenant}/#{path}")
+      end
+
       def implicit_cache_key
         Digest::SHA1.hexdigest("#{schema_cache_key}/#{query_cache_key}")
       end
 
       def schema_cache_key
         @options.fetch(:schema_cache_key) { schema.schema_cache_key }
+      end
+
+      def tenant
+        @options.fetch(:tenant) { "" }
       end
 
       def query_cache_key
