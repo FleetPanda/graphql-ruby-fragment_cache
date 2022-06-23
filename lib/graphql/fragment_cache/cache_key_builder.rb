@@ -14,7 +14,7 @@ module GraphQL
         def traverse_argument(argument)
           return argument unless argument.is_a?(GraphQL::Schema::InputObject)
 
-          "{#{argument.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")}}"
+          "{#{argument.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")}}"
         end
 
         def to_selections_key
@@ -26,7 +26,7 @@ module GraphQL
             field_name = "#{field_alias}:#{field_name}" unless field_alias.empty?
 
             unless val.arguments.empty?
-              args = val.arguments.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")
+              args = val.arguments.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")
               field_name += "(#{args})"
             end
 
@@ -198,7 +198,7 @@ module GraphQL
 
             next lookahead.field.name if lookahead.arguments.empty?
 
-            args = lookahead.arguments.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")
+            args = lookahead.arguments.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")
             "#{lookahead.field.name}(#{args})"
           }.join("/")
         end
@@ -207,7 +207,7 @@ module GraphQL
       def traverse_argument(argument)
         return argument unless argument.is_a?(GraphQL::Schema::InputObject)
 
-        "{#{argument.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")}}"
+        "{#{argument.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")}}"
       end
 
       def object_cache_key
