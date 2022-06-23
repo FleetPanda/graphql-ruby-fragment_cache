@@ -122,6 +122,12 @@ module GraphQL
         end
       end
 
+      class << self
+        def call_pattern(**options)
+          new(**options).build_pattern
+        end
+      end
+
       attr_reader :query, :path, :object, :schema
 
       def initialize(object: nil, query:, path:, **options)
@@ -130,6 +136,10 @@ module GraphQL
         @schema = query.schema
         @path = path
         @options = options
+      end
+
+      def build_pattern
+        implicit_pattern_key
       end
 
       def build
