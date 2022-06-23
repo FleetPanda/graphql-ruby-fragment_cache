@@ -41,7 +41,7 @@ module GraphQL
         (options[:keys] || []).each do |key|
           pattern_key = CacheKeyBuilder.call_pattern(path: key, query: nil, **options)
           all_keys = FragmentCache.cache_store.redis.keys(pattern = "#{pattern_key}/*")
-          FragmentCache.cache_store.redis.del(all_keys)
+          FragmentCache.cache_store.redis.del(all_keys) if all_keys.present?
         end
       end
 
