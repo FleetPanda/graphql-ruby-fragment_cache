@@ -53,15 +53,6 @@ module GraphQL
           context_to_use.fragments << fragment
         end
       end
-
-      def delete_caches(object_to_cache = NO_OBJECT, **options)
-        options[:object] = object_to_cache if object_to_cache != NO_OBJECT
-
-        context_to_use = options.delete(:context)
-        context_to_use = context if context_to_use.nil? && respond_to?(:context)
-        fragment = Fragment.new(context_to_use, **options)
-        fragment.delete_redis_pattern
-      end
     end
   end
 end
