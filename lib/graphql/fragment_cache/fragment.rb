@@ -39,7 +39,7 @@ module GraphQL
 
       def delete_redis_pattern
         (options[:keys] || []).each do |key|
-          pattern_key = CacheKeyBuilder.call(path: path, query: context.query, **options)
+          pattern_key = CacheKeyBuilder.call(path: key, query: nil, **options)
           all_keys = FragmentCache.cache_store.redis.keys(pattern = "#{pattern_key}/*")
           FragmentCache.cache_store.redis.del(all_keys)
         end
