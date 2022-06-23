@@ -13,7 +13,7 @@ module GraphQL
       def initialize(context, **options)
         @context = context
         @options = options
-        @path = interpreter_context[:current_path]
+        @path = interpreter_context[:current_path] if interpreter_context
       end
 
       NIL_IN_CACHE = Object.new
