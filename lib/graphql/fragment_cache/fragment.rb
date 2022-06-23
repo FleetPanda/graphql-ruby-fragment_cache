@@ -62,7 +62,7 @@ module GraphQL
       end
 
       def interpreter_context
-        context&.namespace(:interpreter) if context&.namespace
+        context&.namespace(:interpreter) if context
       end
 
       def final_value
