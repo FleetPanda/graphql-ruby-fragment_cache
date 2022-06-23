@@ -133,7 +133,7 @@ module GraphQL
       def initialize(object: nil, query:, path:, **options)
         @object = object
         @query = query
-        @schema = query.schema
+        @schema = query.schema if query
         @path = path
         @options = options
       end
