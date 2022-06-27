@@ -13,7 +13,7 @@ module GraphQL
       def initialize(context, **options)
         @context = context
         @options = options
-        @path = interpreter_context[:current_path]
+        @path = interpreter_context[:current_path] if interpreter_context
       end
 
       NIL_IN_CACHE = Object.new
@@ -37,6 +37,14 @@ module GraphQL
         final_value.dig(*path)
       end
 
+      def delete_redis_pattern
+        (options[:keys] || []).each do |key|
+          pattern_key = CacheKeyBuilder.call_pattern(path: key, query: nil, **options)
+          all_keys = FragmentCache.cache_store.redis.keys(pattern = "#{pattern_key}/*")
+          FragmentCache.cache_store.redis.del(all_keys) if all_keys.present?
+        end
+      end
+
       private
 
       def read_from_context
@@ -54,7 +62,7 @@ module GraphQL
       end
 
       def interpreter_context
-        context.namespace(:interpreter)
+        context&.namespace(:interpreter) if context
       end
 
       def final_value

@@ -14,7 +14,7 @@ module GraphQL
         def traverse_argument(argument)
           return argument unless argument.is_a?(GraphQL::Schema::InputObject)
 
-          "{#{argument.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")}}"
+          "{#{argument.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")}}"
         end
 
         def to_selections_key
@@ -26,7 +26,7 @@ module GraphQL
             field_name = "#{field_alias}:#{field_name}" unless field_alias.empty?
 
             unless val.arguments.empty?
-              args = val.arguments.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")
+              args = val.arguments.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")
               field_name += "(#{args})"
             end
 
@@ -122,18 +122,29 @@ module GraphQL
         end
       end
 
+      class << self
+        def call_pattern(**options)
+          new(**options).build_pattern
+        end
+      end
+
       attr_reader :query, :path, :object, :schema
 
       def initialize(object: nil, query:, path:, **options)
         @object = object
         @query = query
-        @schema = query.schema
+        @schema = query.schema if query
         @path = path
         @options = options
       end
 
+      def build_pattern
+        implicit_pattern_key
+      end
+
       def build
         [
+          implicit_pattern_key,
           GraphQL::FragmentCache.namespace,
           implicit_cache_key,
           object_cache_key
@@ -142,12 +153,20 @@ module GraphQL
 
       private
 
+      def implicit_pattern_key
+        Digest::SHA1.hexdigest("#{tenant}/#{path}")
+      end
+
       def implicit_cache_key
         Digest::SHA1.hexdigest("#{schema_cache_key}/#{query_cache_key}")
       end
 
       def schema_cache_key
         @options.fetch(:schema_cache_key) { schema.schema_cache_key }
+      end
+
+      def tenant
+        @options.fetch(:tenant) { "" }
       end
 
       def query_cache_key
@@ -179,7 +198,7 @@ module GraphQL
 
             next lookahead.field.name if lookahead.arguments.empty?
 
-            args = lookahead.arguments.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")
+            args = lookahead.arguments.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")
             "#{lookahead.field.name}(#{args})"
           }.join("/")
         end
@@ -188,7 +207,7 @@ module GraphQL
       def traverse_argument(argument)
         return argument unless argument.is_a?(GraphQL::Schema::InputObject)
 
-        "{#{argument.map { "#{_1}:#{traverse_argument(_2)}" }.sort.join(",")}}"
+        "{#{argument.map { |p1, p2| "#{p1}:#{traverse_argument(p2)}" }.sort.join(",")}}"
       end
 
       def object_cache_key

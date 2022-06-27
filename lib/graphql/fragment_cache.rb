@@ -50,6 +50,11 @@ module GraphQL
         @cache_store = store
       end
 
+      def delete_caches(**options)
+        fragment = Fragment.new(nil, **options)
+        fragment.delete_redis_pattern
+      end
+
       def graphql_ruby_before_2_0?
         Gem::Dependency.new("graphql", "< 2.0.0").match?("graphql", GraphQL::VERSION)
       end

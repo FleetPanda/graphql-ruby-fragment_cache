@@ -20,9 +20,9 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob("lib/**/*") + Dir.glob("lib/.rbnext/**/*") + Dir.glob("bin/**/*") + %w[README.md LICENSE.txt CHANGELOG.md]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.6"
+  spec.required_ruby_version = ">= 2.5"
 
-  spec.add_dependency "graphql", ">= 1.12.0"
+  spec.add_dependency "graphql", ">= 1.10.8"
 
   # When gem is installed from source, we add `ruby-next` as a dependency
   # to auto-transpile source files during the first load
